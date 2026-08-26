@@ -61,43 +61,29 @@ export default function LoginPage() {
         const { email, password } = formData;
         if(email && password && !error.email && !error.password){
             try{
-                const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/auth/local`,{
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
+                const response = await fetch("/api/auth/login", {
                     method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
                     body: JSON.stringify({
-                        identifier: email,
-                        password: password
-                    })
+                        email,
+                        password,
+                    }),
                 });
                 const data = await response.json();
-                const jwtToken = data.jwt;
-                const userResponse = await fetch(
-                    `${process.env.NEXT_PUBLIC_STRAPI_URL}/users/me?populate=role`,
-                    {
-                        method: "GET",
-                        headers: {
-                            Authorization: `Bearer ${jwtToken}`,
-                        },
-                    }
-                );
-                const user = await userResponse.json();
-                if (!userResponse.ok) {
-                    alert("Unable to get user information.");
+                auth.setUser(data.user);
+                if (!response.ok) {
+                    setError(data.message || "Login failed");
                     return;
                 }
-                localStorage.setItem("jwt", jwtToken);
-                auth.setUser(user);
-                if(user.role.name === "Admin"){
+                if(data?.user.role === "Admin"){
                     router.push("/admin/dashboard");
                 }
-                else if(user.role.name === "Student"){
+                else if(data?.user.role === "Student"){
                     router.push("/student/dashboard");
                 }
-                else{
-                    router.push("/unauthorized");
-                }
+                router.refresh();
             }
             catch(error){
                 console.error("Error:", error);
