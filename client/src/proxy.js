@@ -16,14 +16,17 @@ export default async function proxy(request) {
             new URL("/login", request.url)
         );
     }
-    const userRole = user.role.name.toLowerCase();
+    let userRole = user.role.name.toLowerCase();
+    if(userRole === "content manager") {
+        userRole = "content-manager";
+    }
     const pathname = request.nextUrl.pathname;
     const requestedRole = pathname.split("/")[1]?.toLowerCase();
     if (requestedRole === userRole) {
         return NextResponse.next();
     }
     return NextResponse.redirect(
-        new URL(`/${userRole}/dashboard`, request.url)
+        new URL(`/${userRole.toLowerCase()}/dashboard`, request.url)
     );
 }
 
@@ -31,6 +34,7 @@ export const config = {
     matcher: [
         "/admin/:path*",
         "/instructor/:path*",
+        "/content-manager/:path*",
         "/student/:path*",
     ],
 };

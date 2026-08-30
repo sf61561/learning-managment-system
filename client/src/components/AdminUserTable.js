@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 
 export default function AdminUserTable() {
@@ -39,8 +40,9 @@ export default function AdminUserTable() {
                             <td className="border-2 border-gray-400 p-2 text-center align-middle">{user.username}</td>
                             <td className="border-2 border-gray-400 p-2 text-center align-middle">{user.role?.name || 'No Role'}</td>
                             <td className="border-2 border-gray-400 p-2 text-center align-middle">
-                                <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Edit</button>
-                                <button className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded ml-2">Delete</button>
+                                <Link href={`/admin/users/${user.id}/edit`}>
+                                    <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded">Edit</button>
+                                </Link>
                             </td>
                         </tr>
                 )

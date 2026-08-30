@@ -113,6 +113,9 @@ export default function LoginPage() {
                 else if(data?.user.role === "Instructor"){
                     router.push("/instructor/dashboard");
                 }
+                else if(data?.user.role === "Content Manager"){
+                    router.push("/content-manager/dashboard");
+                }
                 router.refresh();
             }
             catch(error){
