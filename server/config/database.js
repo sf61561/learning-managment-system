@@ -2,11 +2,11 @@
 
 const path = require('path');
 const { isDatabaseClientKind } = require('@strapi/database');
-const { parse } = require('pg-connection-string');
 
 module.exports = ({ env }) => {
   const databaseUrl = env('DATABASE_URL');
-  const client = env('DATABASE_CLIENT', databaseUrl ? 'postgres' : 'sqlite');
+  const hasPgEnv = databaseUrl || env('PGHOST') || env('DATABASE_HOST');
+  const client = env('DATABASE_CLIENT', hasPgEnv ? 'postgres' : 'sqlite');
 
   if (!isDatabaseClientKind(client)) {
     throw new Error(
@@ -14,42 +14,41 @@ module.exports = ({ env }) => {
     );
   }
 
-  // Parse DATABASE_URL if available
-  const parsedPostgres = databaseUrl ? parse(databaseUrl) : {};
-
-  const isSsl = env.bool('DATABASE_SSL', false);
+  // Determine SSL configuration for Railway PostgreSQL
+  const isSsl = env.bool('DATABASE_SSL', true);
   const sslConfig = isSsl
-    ? {
-        rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', false),
-      }
+    ? { rejectUnauthorized: env.bool('DATABASE_SSL_REJECT_UNAUTHORIZED', false) }
     : false;
 
-  /** @type {Record<Core.Config.Database.ClientKind, Core.Config.Database['connection']>} */
+  let postgresConnection;
+
+  if (databaseUrl) {
+    postgresConnection = {
+      connectionString: databaseUrl,
+      ssl: sslConfig,
+      schema: env('DATABASE_SCHEMA', 'public'),
+    };
+  } else {
+    postgresConnection = {
+      host: env('PGHOST', env('DATABASE_HOST', 'localhost')),
+      port: env.int('PGPORT', env.int('DATABASE_PORT', 5432)),
+      database: env('PGDATABASE', env('DATABASE_NAME', 'strapi')),
+      user: env('PGUSER', env('DATABASE_USERNAME', 'strapi')),
+      password: env('PGPASSWORD', env('DATABASE_PASSWORD', 'strapi')),
+      ssl: sslConfig,
+      schema: env('DATABASE_SCHEMA', 'public'),
+    };
+  }
+
   const connections = {
-    mysql: {
-      client: 'mysql',
-      connection: {
-        host: env('DATABASE_HOST', 'localhost'),
-        port: env.int('DATABASE_PORT', 3306),
-        database: env('DATABASE_NAME', 'strapi'),
-        user: env('DATABASE_USERNAME', 'strapi'),
-        password: env('DATABASE_PASSWORD', 'strapi'),
-        ssl: env.bool('DATABASE_SSL', false),
-      },
-      pool: { min: env.int('DATABASE_POOL_MIN', 0), max: env.int('DATABASE_POOL_MAX', 10) },
-    },
     postgres: {
       client: 'postgres',
-      connection: {
-        host: parsedPostgres.host || env('DATABASE_HOST', 'localhost'),
-        port: env.int('DATABASE_PORT', parsedPostgres.port ? parseInt(parsedPostgres.port, 10) : 5432),
-        database: parsedPostgres.database || env('DATABASE_NAME', 'strapi'),
-        user: parsedPostgres.user || env('DATABASE_USERNAME', 'strapi'),
-        password: parsedPostgres.password || env('DATABASE_PASSWORD', 'strapi'),
-        ssl: sslConfig,
-        schema: env('DATABASE_SCHEMA', 'public'),
+      connection: postgresConnection,
+      pool: {
+        min: env.int('DATABASE_POOL_MIN', 0),
+        max: env.int('DATABASE_POOL_MAX', 10),
+        acquireTimeoutMillis: env.int('DATABASE_CONNECTION_TIMEOUT', 60000),
       },
-      pool: { min: env.int('DATABASE_POOL_MIN', 0), max: env.int('DATABASE_POOL_MAX', 10) },
     },
     sqlite: {
       client: 'sqlite',
