@@ -2,7 +2,7 @@ import { decodeJwt } from "jose";
 const getUserData = async (jwt) => {
     const payload = decodeJwt(jwt);
     const { userId } = payload;
-    const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_URL;
+    const STRAPI_API_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://learning-managment-system-production-a958.up.railway.app/api";
     try {
         const strapiUserResponse = await fetch(`${STRAPI_API_URL}/users/${userId}?populate=role`, {
             method: "GET",

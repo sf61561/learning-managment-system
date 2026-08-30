@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import HomeNavbar from "@/src/components/HomeNavbar";
 import HomeFooter from "@/src/components/HomeFooter";
 
-const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "http://localhost:1337/api";
+const STRAPI_URL = process.env.NEXT_PUBLIC_STRAPI_URL || "https://learning-managment-system-production-a958.up.railway.app/api";
 
 async function getCourseDetails(id) {
     try {
