@@ -39,7 +39,8 @@ export async function GET(request, { params }) {
     const { id } = await params;
     console.log("Received GET request for course ID:", id);
     try {
-        const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/quizzes?filters[course][documentId][$eq]=${id}`, {
+        const filterField = /^\d+$/.test(id) ? 'id' : 'documentId';
+        const response = await fetch(`${process.env.NEXT_PUBLIC_STRAPI_URL}/quizzes?filters[course][${filterField}][$eq]=${id}`, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',

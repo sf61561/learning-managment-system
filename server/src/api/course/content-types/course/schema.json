@@ -52,6 +52,12 @@
       "relation": "oneToMany",
       "target": "api::quiz.quiz",
       "mappedBy": "course"
+    },
+    "enrolls": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::enroll.enroll",
+      "mappedBy": "course"
     }
   }
 }

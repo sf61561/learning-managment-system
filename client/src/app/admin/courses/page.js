@@ -13,7 +13,7 @@ export default function AdminCoursesPage() {
     useEffect(() => {
         const fetchCourses = async () => {
             try {
-                const response = await fetch('/api/content-manager/courses', {
+                const response = await fetch('/api/admin/courses', {
                     method: 'GET',
                     cache: 'no-store'
                 });

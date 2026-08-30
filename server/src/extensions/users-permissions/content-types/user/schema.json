@@ -70,6 +70,18 @@
       "type": "string",
       "required": true,
       "unique": true
+    },
+    "enrolls": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::enroll.enroll",
+      "mappedBy": "student"
+    },
+    "quiz_marks": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::quiz-mark.quiz-mark",
+      "mappedBy": "quiz"
     }
   }
 }
