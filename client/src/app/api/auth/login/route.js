@@ -39,6 +39,8 @@ export async function POST(request) {
             );
         }
         let { jwt, user } = data;
+        console.log(user);
+        
         cookieStore.set("jwt", jwt, {
             httpOnly: true,
             secure: true,
@@ -78,7 +80,8 @@ export async function POST(request) {
                 id: user.id,
                 username: user.username,
                 email: user.email,
-                role: user.role.name
+                role: user.role.name,
+                jwt: jwt
             },
             status: 200
         });

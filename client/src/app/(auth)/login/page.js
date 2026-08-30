@@ -72,16 +72,46 @@ export default function LoginPage() {
                     }),
                 });
                 const data = await response.json();
-                auth.setUser(data.user);
+                console.log(data);
+                if(data.status == 400 && data.message==="Your account email is not confirmed"){
+                    const confirmResponse = await fetch("/api/auth/email-confirmation", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            email,
+                        }),
+                    });
+                    const confirmData = await confirmResponse.json();
+                    if(confirmData.status == 200){
+                        alert("Email confirmation sent. Please check your email.");
+                    }
+                    else{
+                        alert(confirmData.message || "Error sending email confirmation. Please try again later.");
+                    }
+                    return;
+                }
+                auth.setUser({
+                    id: data.user.id,
+                    username: data.user.username,
+                    email: data.user.email,
+                    role: data.user.role.name
+                });
+                auth.setJwtToken(data.user.jwt);
                 if (!response.ok) {
                     setError(data.message || "Login failed");
                     return;
                 }
+
                 if(data?.user.role === "Admin"){
                     router.push("/admin/dashboard");
                 }
                 else if(data?.user.role === "Student"){
                     router.push("/student/dashboard");
+                }
+                else if(data?.user.role === "Instructor"){
+                    router.push("/instructor/dashboard");
                 }
                 router.refresh();
             }
