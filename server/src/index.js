@@ -18,4 +18,4 @@ module.exports = {
    */
   bootstrap(/*{ strapi }*/) {},
 };
-// reload trigger
+// reload trigger - blog post schema

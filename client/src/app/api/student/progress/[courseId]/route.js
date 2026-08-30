@@ -2,13 +2,6 @@ import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { decodeJwt } from "jose";
 
-/**
- * GET /api/student/progress/[courseId]
- * Returns the current student's progress breakdown for a given course:
- * - Calculated progress percentage
- * - Array of completed lesson IDs
- * - Array of quiz attempt records
- */
 export async function GET(request, { params }) {
     const { courseId } = await params;
     const cookiesData = await cookies();
