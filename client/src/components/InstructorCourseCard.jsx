@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-export default function AdminCourseCard({ course }) {
+export default function InstructorCourseCard({ course }) {
     return (
         <div className="border border-gray-300 rounded-lg overflow-hidden shadow-md hover:shadow-lg transition duration-300">
             <img

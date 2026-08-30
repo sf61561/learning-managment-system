@@ -96,7 +96,7 @@ export default function LoginPage() {
                     id: data.user.id,
                     username: data.user.username,
                     email: data.user.email,
-                    role: data.user.role.name
+                    role: data.user.role
                 });
                 auth.setJwtToken(data.user.jwt);
                 if (!response.ok) {
